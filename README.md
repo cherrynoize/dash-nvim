@@ -379,6 +379,7 @@ See the [`examples`](examples) folder.
 - **Projects panel says "not installed" or is empty:** install project.nvim (or other) as described above, load it eagerly (`lazy = false`) so it is set up before Dash opens and set `reverse = false`. Open a file inside a project once (or `:Project add`).
 - **Dashboard not opening on startup:** it only opens with no file arguments and an empty buffer, if `vim.g.dash_disable` is not set.
 - **Keymap not working:** another item with the same key came first, or the key is reserved by a navigation map.
+- **Git panel not showing or working directory set to $HOME:** this is `project.nvim` recognizing some pattern all the way up to your home directory. Add `exclude_dirs = { "~" }` to your `project.nvim` opts.
 
 ## Todo
 
