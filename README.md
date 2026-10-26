@@ -1,19 +1,20 @@
 # dash-nvim
 
 A fully customizable multi-panel dashboard for Neovim. Because other dashboard
-plugins are not fully customizable enough.
+plugins just aren't custom enough.
 
 [![Dash](https://i.imgur.com/dEnfX4h.png)](https://i.imgur.com/dEnfX4h.png)
 [![Dash](https://i.imgur.com/zmcYZnK.png)](https://i.imgur.com/zmcYZnK.png)
 
 ## Features
 
-- Configurable number of panels, in a responsive grid
-- Scrollbar and an entry counter
-- Optional footer rows
 - Built-in  presets: **actions, search, git, system, recent files, projects, colorschemes**; the defaults show just Quick actions and Recent files
 - Fully themable: palette, styles, and icons
 - Fully customizable: hotkeys, panels, sections, header, greeting message, date, chips and hints
+- Configurable panel number
+- Responsive grid
+- Scrollbar and entry counter
+- Optional footer rows
 - Hooks (`on_open`, `User DashOpened`)
 - Auto-hidden items with missing deps
 - Mouse support
