@@ -23,7 +23,11 @@ local pick, cmd = util.pick, util.cmd
 
 local M = {}
 
-local function lazy() return fn.exists(":Lazy") == 2 end
+local function lazy()
+  -- the command may not exist yet while the dashboard first renders,
+  -- but the module is already loaded once lazy.nvim has started
+  return package.loaded["lazy"] ~= nil or fn.exists(":Lazy") == 2
+end
 local function mason() return fn.exists(":Mason") == 2 end
 local function fugitive() return fn.exists(":Git") == 2 end
 local function lazygit() return fn.executable("lazygit") == 1 end

@@ -348,7 +348,15 @@ function M.build(spec)
   local items = {}
   for _, s in ipairs(raw or {}) do
     local item = items_mod.resolve(s)
-    if item then items[#items + 1] = item end
+    if item then
+      items[#items + 1] = item
+    else
+      util.warn(
+        "panel '" .. tostring(p.title) .. "': item '"
+          .. tostring(type(s) == "table" and s[1] or s)
+          .. "' skipped (unknown, or its cond returned false)"
+      )
+    end
   end
   if #items == 0 then
     items[1] = { icon = p.empty_icon or "file", label = p.empty or "Nothing here" }
