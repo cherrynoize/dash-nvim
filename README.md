@@ -75,12 +75,12 @@ Run `:checkhealth dash` to verify the install and see which optional deps were f
 
 ## Usage
 
-| | |
+| What you do | What you get |
 |---|---|
 | `:Dash`, `:Dashboard` | open the dashboard in the current window |
 | `require("dash").open()` | open the dashboard using the API |
 | `require("dash").refresh()` | rebuild the panels of an open dashboard |
-| `vim.g.dash_disable = true` | never open on startup |
+| `vim.g.dash_disable = true` | never open on startup option |
 
 It opens automatically when Neovim starts with no file arguments and an empty
 buffer (`autostart = false` turns that off).
@@ -102,7 +102,7 @@ Hit the key displayed beside an entry to select it without navigating to it.
 ## Configuration
 
 `setup()` deep-merges your table over the defaults.
-**Lists are replaced, not merged** (`panels`, `chips`, `keys.next_item` ...).
+**Lists are replaced, not merged** (`panels`, `chips`, `keys.next_item`, ...).
 
 | Option | Default | Meaning |
 |---|---|---|
@@ -379,3 +379,7 @@ See the [`examples`](examples) folder.
 - **Projects panel says "not installed" or is empty:** install project.nvim (or other) as described above, load it eagerly (`lazy = false`) so it is set up before Dash opens and set `reverse = false`. Open a file inside a project once (or `:Project add`).
 - **Dashboard not opening on startup:** it only opens with no file arguments and an empty buffer, if `vim.g.dash_disable` is not set.
 - **Keymap not working:** another item with the same key came first, or the key is reserved by a navigation map.
+
+## Todo
+
+- Autoexpand panel on odd number panel configs to fill screen

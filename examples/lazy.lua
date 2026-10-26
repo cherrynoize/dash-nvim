@@ -21,7 +21,5 @@ return {
     },
   },
 
-  opts = function()
-    return require("config/dash")       -- path to dash config
-  end,
+  -- opts = {},
 }
