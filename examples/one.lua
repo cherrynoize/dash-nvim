@@ -1,47 +1,26 @@
--- examples/config.lua
---
--- The original single-file dashboard, expressed as a dash-nvim configuration:
--- six panels (Quick actions with the search entries merged in, Recent files,
--- Projects, Colorschemes, Git, System), the purple / neon-blue palette and
--- the default keys.
---
--- Use it as is:
---   require("dash").setup(require("dash_config"))     -- after copying this file to
---                                                      -- ~/.config/nvim/lua/dash_config.lua
--- or paste the table straight into setup() / lazy.nvim's `opts`.
+-- examples/one.lua
 
 return {
   autostart = true,
 
-  -- greeting name: $USER exactly as it is (use `user = "Name"` to override)
   user = nil,
 
   panels = {
-    -- Quick actions + search in one scrolling panel; Quit stays last
     {
       "actions",
       title = "QUICK ACTIONS",
       items = {
-        "find_files", "new_file", "config", "plugins", "terminal",
+        "new_file", "find_files", "config", "plugins", "terminal",
         "find_word", "find_string", "find_in_open", "buffers", "diagnostics",
         "marks", "registers", "keymaps", "commands", "help_tags", "man_pages",
         "resume",
         "quit",
       },
     },
-
     { "recent", title = "RECENT FILES" },
-
-    -- needs DrKJeff16/project.nvim (see examples/lazy.lua)
     { "projects", title = "PROJECTS", reverse = true },
-
     { "colorschemes", title = "COLORSCHEMES" },
-
-    -- tracked files, changes, commits, branches, status, stash, lazygit;
-    -- only shown inside a git repository
     { "git", title = "GIT" },
-
-    -- purple "item" rows, like Recent files and Colorschemes
     { "system", title = "SYSTEM", style = "item" },
   },
 

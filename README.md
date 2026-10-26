@@ -1,125 +1,89 @@
 # dash-nvim
 
-A multi-panel dashboard for Neovim. Panels, entries, colors, borders, icons,
-layout and every key are configurable, and the original "neon" setup ships as
-an example config.
-
-```
-                       ◆  N E O V I M
-                 Good evening, you
-                  Monday, 26 October
-
-╭─ QUICK ACTIONS ── 1/18 ─╮   ╭─ RECENT FILES ──────────╮   ╭─ PROJECTS ──────────────╮
-│   Find files          f │   │   init.lua        1     │   │   dash-nvim     ~/code  │
-│   New file            n │   │   keymaps.lua     2     │   │   notes         ~/docs  │
-│   ...                   │   │   ...                   │   │   ...                   │
-╰─────────────────────────╯   ╰─────────────────────────╯   ╰─────────────────────────╯
-```
-
-(Illustration only; the real thing is colored and sized to your window.)
+A fully customizable multi-panel dashboard for Neovim. Because other dashboard
+plugins are not fully customizable enough.
 
 ## Features
 
-- Any number of panels, laid out in a responsive grid (1 to N columns)
-- Scrolling panels with a scrollbar and an `n/N` counter, optional footer rows
-- Built-in presets: **actions, search, git, system, recent files, projects, colorschemes**; the defaults show just Quick actions and Recent files
-- ~35 ready-made entries (items) you reference by name, plus your own
-- Everything is themable: palette, per-group highlights, row styles, borders, icon sets
-- Every key is remappable, plus per-item hotkeys, mouse support and user maps
-- Header, greeting, date, status chips and key hints can each be changed or removed
-- Reorder / add your own sections; hooks (`on_open`, `User DashOpened`)
-- Works without any optional plugin; items whose requirements are missing are hidden
+- Configurable number of panels, in a responsive grid
+- Scrollbar and an entry counter
+- Optional footer rows
+- Built-in  presets: **actions, search, git, system, recent files, projects, colorschemes**; the defaults show just Quick actions and Recent files
+- Fully themable: palette, styles, and icons
+- Fully customizable: hotkeys, panels, sections, header, greeting message, date, chips and hints
+- Hooks (`on_open`, `User DashOpened`)
+- Auto-hidden items with missing deps
+- Mouse support
+- Works from the get-go; zero brainmelt required
 
 ## Requirements
 
-- Neovim **0.9+** (0.11+ if you use the Projects panel with project.nvim)
-- A [Nerd Font](https://www.nerdfonts.com/) and `termguicolors`
+- Neovim **0.9+** (or 0.11+ with project.nvim)
+- Some sort of [Nerd Font](https://www.nerdfonts.com/) and `termguicolors`
 - Optional:
   [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) (pickers behind most items),
   [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) (file icons),
-  [DrKJeff16/project.nvim](https://github.com/DrKJeff16/project.nvim) (Projects panel),
+  [DrKJeff16/project.nvim](https://github.com/DrKJeff16/project.nvim) (projects panel),
   [lazy.nvim](https://github.com/folke/lazy.nvim) (plugin items, startup time chip),
   [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) (floating Lazygit),
-  [vim-fugitive](https://github.com/tpope/vim-fugitive) (`Git status` item)
+  [vim-fugitive](https://github.com/tpope/vim-fugitive) (`Git status`)
 
 ## Installation
-
-The repository is `git@github.com:cherrynoize/dash-nvim.git` (SSH), and everything
-below clones it that way. The plugin ends up in your plugins directory like any
-other plugin; there is nothing to configure about *where* it lives.
 
 ### lazy.nvim
 
 ```lua
--- ~/.config/nvim/lua/plugins/dash-nvim.lua
-return {
+{
   "cherrynoize/dash-nvim",
-  url = "git@github.com:cherrynoize/dash-nvim.git", -- clone over SSH
-  lazy = false,                                      -- needed for the startup dashboard
+  lazy = false, -- required to launch on startup
   priority = 100,
   dependencies = {
     "nvim-telescope/telescope.nvim",
     "nvim-tree/nvim-web-devicons",
-    { "DrKJeff16/project.nvim", lazy = false, opts = {} }, -- for the Projects panel
+    { "DrKJeff16/project.nvim", lazy = false, opts = {} }, -- projects panel
   },
   opts = {
-    -- your options (see Configuration); {} = defaults
+    -- config options
   },
 }
 ```
-
-`opts` calls `require("dash").setup(opts)` for you. To clone *every* plugin over SSH,
-set it once in lazy's own setup instead of per plugin:
-
-```lua
-require("lazy").setup("plugins", { git = { url_format = "git@github.com:%s.git" } })
-```
-
-See `examples/lazy.lua` for a complete spec that loads `examples/config.lua`.
 
 ### vim.pack (Neovim 0.12+)
 
 ```lua
 vim.pack.add({
-  { src = "git@github.com:cherrynoize/dash-nvim.git" },
+  { src = "cherrynoize/dash-nvim" },
   -- optional: telescope, devicons, project.nvim ...
 })
-require("dash").setup({ ... })
+require("dash").setup({
+  -- config options
+})
 ```
 
 ### Built-in packages (no plugin manager)
 
 ```sh
-git clone git@github.com:cherrynoize/dash-nvim.git \
+git clone https://github.com/cherrynoize/dash-nvim \
   ~/.local/share/nvim/site/pack/plugins/start/dash-nvim
 ```
 
-then call `require("dash").setup({})` from `init.lua`. Plugins in `start/` load
-automatically before `init.lua` finishes. In `opt/` you would `:packadd dash-nvim` first.
+then call `require("dash").setup({})` inside your config.
 
-### Using the original configuration
+### Post-install
 
-```sh
-cp examples/config.lua ~/.config/nvim/lua/dash_config.lua
-```
-
-```lua
-require("dash").setup(require("dash_config"))
-```
-
-Run `:checkhealth dash` to verify the install and see which optional pieces were found.
+Run `:checkhealth dash` to verify the install and see which optional deps were found.
 
 ## Usage
 
 | | |
 |---|---|
-| `:Dash`, `:Dashboard` | open the dashboard in the current window (names are configurable: `commands`) |
-| `require("dash").open()` | same, from Lua |
+| `:Dash`, `:Dashboard` | open the dashboard in the current window |
+| `require("dash").open()` | open the dashboard using the API |
 | `require("dash").refresh()` | rebuild the panels of an open dashboard |
 | `vim.g.dash_disable = true` | never open on startup |
 
-It opens automatically when Neovim starts with no file arguments and an empty buffer
-(`autostart = false` turns that off).
+It opens automatically when Neovim starts with no file arguments and an empty
+buffer (`autostart = false` turns that off).
 
 ### Default keys
 
@@ -127,25 +91,24 @@ It opens automatically when Neovim starts with no file arguments and an empty bu
 |---|---|
 | `H J K L` | move between panels |
 | `Tab`, `S-Tab` | next / previous panel |
-| `j k`, `Up Down`, `C-n C-p` | move inside a panel (wraps; long lists scroll) |
+| `j k`, `Up Down`, `C-n C-p` | move inside a panel |
 | `l`, `Enter` | select |
 | `gg`, `G` | first / last entry |
 | `C-d`, `C-u`, `PageDown`, `PageUp` | page down / up |
 | mouse | click = focus, double click = select, wheel = scroll |
-| the key shown on a row | run that entry directly |
+
+Hit the key displayed beside an entry to select it without navigating to it.
 
 ## Configuration
 
-`setup()` deep-merges your table over the defaults, so you only write what
-you change. **Lists are replaced, not merged** (`panels`, `chips`, `keys.next_item` ...).
-The complete default table, with comments, is in
-[`lua/dash/config.lua`](lua/dash/config.lua).
+`setup()` deep-merges your table over the defaults.
+**Lists are replaced, not merged** (`panels`, `chips`, `keys.next_item` ...).
 
 | Option | Default | Meaning |
 |---|---|---|
 | `autostart` | `true` | open on an empty startup |
-| `user` | `nil` | greeting name: `nil` = `$USER` as is, a string, a function, or `false` |
-| `commands` | `{ "Dash", "Dashboard" }` | commands that open the dashboard |
+| `user` | `nil` | displayed name: `nil` = `$USER` as is, a string, a function, or `false` |
+| `commands` | `{ "Dash", "Dashboard" }` | list of commands to open the dashboard |
 | `filetype` | `"dash"` | buffer filetype |
 | `hide_cursor` | `true` | hide the cursor while the dashboard is focused |
 | `mouse` | `true` | mouse support |
@@ -157,8 +120,8 @@ The complete default table, with comments, is in
 | `items` | `{}` | add / override registry items |
 | `chips`, `chip_caps`, `hints` | see below | status line and key hints |
 | `layout`, `border`, `window_options` | see below | geometry |
-| `icons`, `colors`, `highlights`, `styles` | see below | look |
-| `keys` | see below | key map |
+| `icons`, `colors`, `highlights`, `styles` | see below | appearance |
+| `keys` | see below | keymaps |
 
 ### Panels
 
@@ -166,9 +129,9 @@ The complete default table, with comments, is in
 
 ```lua
 panels = {
-  "recent",                                  -- a preset
-  { "recent", title = "FILES", max = 20 },   -- a preset with overrides
-  { title = "NOTES", style = "item",         -- a custom panel
+  "recent",                                  -- preset
+  { "recent", title = "FILES", max = 20 },   -- preset with overrides
+  { title = "NOTES", style = "item",         -- panel literal
     items = { "find_files", { label = "Todo", key = "t", run = "edit ~/todo.md" } } },
 }
 ```
@@ -178,7 +141,7 @@ Panel fields: `title`, `style`, `items`, `visible`, `footer`, `empty`, `sel`, `c
 | Field | Meaning |
 |---|---|
 | `title` | text in the top border |
-| `style` | row style: `"primary"` (neon blue buttons), `"item"` (purple rows) or one of your own (`styles`) |
+| `style` | row style: `"primary"`, `"item"` or one of your own (`styles`) |
 | `items` | list of items, or `function(panel) -> items[, selected_index]` |
 | `visible` | rows shown at once (default `layout.visible`); a footer takes one |
 | `footer` | `function(selected_item, panel) -> { { text, hl }, ... }` drawn in an extra bottom row |
@@ -195,13 +158,13 @@ Panel fields: `title`, `style`, `items`, `visible`, `footer`, `empty`, `sel`, `c
 | `git` | Tracked files, Changes, Commits, Branches, Status, Stash, Lazygit. **Only shown inside a git repository**; pass `cond = function() return true end` to always show it | `cond` |
 | `system` | Check health, LSP info, Messages, Sync, Mason, Check updates, Neovim help | |
 | `recent` | recent files; footer shows the full path of the selected file | `max` (50), `hotkeys` (9, keys `1`-`9`), `exclude` (list of Lua patterns, default `{ "/%.git/" }`), `cwd_only` |
-| `projects` | projects known to project.nvim; current one marked `●`; selecting `cd`s, refreshes the chips and opens a file picker | `source`, `reverse` (true), `max`, `open` |
+| `projects` | projects listed by project.nvim; current one marked `●`; selecting `cd`s, refreshes the chips and opens a file picker | `source`, `reverse` (true), `max`, `open` |
 | `colorschemes` | all colorschemes, active one marked `●`, palette strip in the footer | `exclude` (names), `filter` (function), `lazy`, `swatch`, `swatches` |
 
 `projects` options: `source` is `"project.nvim"` (default) or a function returning a
 list of directories (use it for any other project manager); `open` is
 `"find_files"` (default), `"edit"`, `"none"` (only `cd`) or `function(path)`;
-`reverse` flips the list, because project.nvim returns the oldest project first.
+`reverse` flips the list, to show most recent first.
 
 To extend a preset, build on its items:
 
@@ -214,9 +177,9 @@ panels = { git }
 Register your own preset (also usable as `"mine"` in `panels`):
 
 ```lua
-require("dash").register_panel("todos", function(spec)
+require("dash").register_panel("todo", function(spec)
   return {
-    title = "TODOS", style = "item",
+    title = "TODO", style = "item",
     items = function() return { { label = "write docs", run = "edit docs.md" } } end,
   }
 end)
@@ -224,13 +187,13 @@ end)
 
 ### Items
 
-Items are the rows. Refer to them by name, with overrides, or define them inline:
+Items are the rows. Refer to them by name, or define them inline:
 
 ```lua
 items = {
   "find_files",                          -- registry entry
   { "quit", key = "Q", label = "Exit" }, -- entry with overrides
-  { icon = "file", label = "Todo", key = "t", run = "edit ~/todo.md" },  -- literal
+  { icon = "file", label = "Todo", key = "t", run = "edit ~/todo.md" }, -- row literal
 }
 ```
 
@@ -292,13 +255,13 @@ greeting = function(ctx) return "Hello " .. ctx.user end  -- string or pieces
 greeting = false
 
 date = "%A, %d %B"   -- os.date format, a function, or false
-user = "Ada"         -- or function() return "Ada" end, or false to hide the name
+user = "User"         -- or function() return "User" end, or false to hide the name
 ```
 
 ### Chips and hints
 
 ```lua
-chips = { "branch", "cwd", "version", "startup" }       -- default; built-in names
+chips = { "branch", "cwd", "version", "startup" }        -- default; built-in names
 chips = { { "cwd", max = 30 }, "version" }               -- chip options
 chips = { function() return { icon = "file", text = "hi", hl = "DashChipAccent" } end }
 chip_caps = false                                        -- no rounded caps
@@ -321,7 +284,7 @@ layout = {
   top_padding = "auto",
   wrap = true,         -- j / k wrap around
   scrollbar = true,
-  counter = true,      -- "3/24" in the border of scrollable panels
+  counter = true,      -- "m/n" in the border of scrollable panels
 }
 border = { tl = "╭", tr = "╮", bl = "╰", br = "╯", h = "─", v = "│", thumb = "┃" }
 ```
@@ -342,7 +305,7 @@ window-local options of the dashboard window (merged with the defaults).
 | `blue`, `blue_bg`, `blue_key`, `blue_txt`, `blue_dim`, `blue_deep` | the neon button style and focused row |
 
 ```lua
-colors = { purple = "#34D399", blue = "#5EEAD4" }          -- change some
+colors = { purple = "#34D399", blue = "#5EEAD4" }          -- overrides
 highlights = { DashTitleActive = { fg = "#FBBF24", bold = true } }
 highlights = { DashBorder = "Comment" }                    -- link to a group
 highlights = function(c) return { DashHint = { fg = c.soft } } end
@@ -389,6 +352,14 @@ keys = {
 Every entry takes a string, a list, or `false` to disable it. `block` keys become
 no-ops (the screen is read-only) unless an item or action already uses them.
 
+### Custom project manager
+
+Set up a Projects panel for another project manager:
+
+```lua
+{ "projects", source = function() return require("my_projects").list() end }
+```
+
 ### Events and API
 
 - `User DashOpened` autocommand and `on_open({ buf, win })` after the dashboard opens
@@ -398,32 +369,13 @@ no-ops (the screen is read-only) unless an item or action already uses them.
 
 ## Examples
 
-- [`examples/config.lua`](examples/config.lua): the original dashboard (6 panels, neon palette)
-- [`examples/lazy.lua`](examples/lazy.lua): lazy.nvim spec with the optional dependencies
-- [`examples/custom.lua`](examples/custom.lua): ASCII header, custom panel, green palette,
-  two columns, other keys, custom chip
-
-Two things worth copying from the original setup:
-
-```lua
--- the Quick actions + search panel in one scrolling list
-{ "actions", items = { "find_files", "new_file", "config", "plugins", "terminal",
-  "find_word", "find_string", "find_in_open", "buffers", "diagnostics", "marks",
-  "registers", "keymaps", "commands", "help_tags", "man_pages", "resume", "quit" } }
-
--- a Projects panel for another project manager
-{ "projects", source = function() return require("my_projects").list() end }
-```
+See the [`examples`](examples) folder.
 
 ## Troubleshooting
 
-- **Empty or missing icons:** use a Nerd Font, or set `icons = { set = "fa" }`, or override single icons.
-- **Panels not colored:** enable `vim.o.termguicolors`.
-- **An item is missing:** its requirement (Telescope, Lazy, Mason, fugitive, lazygit) was not found. See `cond` above and `:checkhealth dash`.
-- **Projects panel says "not installed" or is empty:** install project.nvim, load it eagerly (`lazy = false`) so it is set up before Dash opens, and open a file inside a project once (or `:Project add`). If the order looks upside down, set `reverse = false`.
-- **Dashboard doesn't open on startup:** it only opens with no file arguments and an empty buffer, and `vim.g.dash_disable` must not be set.
-- **Hotkey doesn't work:** another item with the same key came first, or the key is reserved by a navigation map.
-
-## License
-
-MIT, see [LICENSE](LICENSE).
+- **Icons missing :** Nerd Font missing? Try `icons = { set = "fa" }`, or override single icons.
+- **Colors missing:** enable `vim.o.termguicolors`.
+- **Items missing:** its requirement (Telescope, Lazy, Mason, fugitive, lazygit) was not found. See `cond` above and `:checkhealth dash`.
+- **Projects panel says "not installed" or is empty:** install project.nvim (or other) as described above, load it eagerly (`lazy = false`) so it is set up before Dash opens and set `reverse = false`. Open a file inside a project once (or `:Project add`).
+- **Dashboard not opening on startup:** it only opens with no file arguments and an empty buffer, if `vim.g.dash_disable` is not set.
+- **Keymap not working:** another item with the same key came first, or the key is reserved by a navigation map.

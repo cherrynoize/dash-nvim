@@ -1,11 +1,8 @@
--- examples/custom.lua
--- A smaller, differently styled dashboard that shows the customization hooks.
--- Try it with:  :lua require("dash").setup(dofile("/path/to/this/custom.lua"))
+-- examples/two.lua
 
 return {
-  user = "Ada",
+  user = "Dash",
 
-  -- ASCII header instead of the icon + text
   header = {
     lines = {
       "╔╦╗╔═╗╔═╗╦ ╦",
@@ -19,15 +16,15 @@ return {
   end,
   date = "%d.%m.%Y",
 
-  -- sections in a different order, plus one of our own
-  sections = { "header", "spacer", "greeting", "date", "spacer", "panels", "spacer", "chips",
-    function() return { "have a nice day" } end },
+  sections = {
+    "header", "spacer", "greeting", "date", "spacer", "panels", "spacer", "chips",
+    function() return { "have a nice day" } end
+  },
 
   panels = {
-    -- a preset with different entries (and a different hotkey on one of them)
     { "actions", title = "START", items = { "find_files", { "new_file", key = "e" }, "quit" } },
 
-    -- a fully custom panel
+    -- custom panel
     {
       title = "NOTES",
       style = "item",
@@ -48,7 +45,7 @@ return {
   -- square borders
   border = { tl = "┌", tr = "┐", bl = "└", br = "┘", h = "─", v = "│", thumb = "█" },
 
-  -- a green palette; any single highlight group can be replaced as well
+  -- bluegreen-ish palette; any single highlight group can be replaced as well
   colors = {
     bg = "#0B1410", surface = "#12221A", elevated = "#1A3326", border = "#285C40",
     purple = "#34D399", text = "#ECFDF5", soft = "#6EE7B7", muted = "#10B981",
@@ -60,7 +57,6 @@ return {
     DashTitleActive = { fg = "#FBBF24", bold = true },
   },
 
-  -- different keys
   keys = {
     panel_left = "<C-h>", panel_down = "<C-j>", panel_up = "<C-k>", panel_right = "<C-l>",
     extra = {
@@ -69,7 +65,7 @@ return {
   },
   hints = { { "C-h/j/k/l", "panels" }, { "j k", "move" }, { "l", "select" }, { "Esc", "close" } },
 
-  -- your own chip
+  -- custom chip
   chips = {
     "cwd",
     function() return { icon = "file", text = #vim.v.oldfiles .. " recent", hl = "DashChipAccent" } end,
