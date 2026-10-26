@@ -123,21 +123,39 @@ M.presets.recent = function()
 end
 
 -------------------------------------------------------------------------------
--- projects (DrKJeff16/project.nvim by default)
+-- projects
 -------------------------------------------------------------------------------
--- returns a list of directories, or nil + a message
+-- turn a raw entry (string path or { path, name } table) into { path, name }
+local function normalize_project(e)
+  if type(e) == "string" then
+    return { path = e }
+  elseif type(e) == "table" and type(e.path) == "string" then
+    return { path = e.path, name = e.name }
+  end
+end
+
+-- returns a list of { path, name }, or nil + a message
 local function project_list(p)
   local src = p.source or "project.nvim"
+  local raw
   if type(src) == "function" then
     local ok, list = pcall(src)
-    if ok and type(list) == "table" then return list end
-    return nil, "project source failed"
+    if not (ok and type(list) == "table") then return nil, "project source failed" end
+    raw = list
+  else
+    local ok, project = pcall(require, "project")
+    if not ok then return nil, "project.nvim not found" end
+    local got, list = pcall(project.get_recent_projects)
+    if not got or type(list) ~= "table" then return {} end
+    raw = list
   end
-  local ok, project = pcall(require, "project")
-  if not ok then return nil, "project.nvim is not installed" end
-  local got, list = pcall(project.get_recent_projects)
-  if not got or type(list) ~= "table" then return {} end
-  return list
+
+  local out = {}
+  for _, e in ipairs(raw) do
+    local entry = normalize_project(e)
+    if entry then out[#out + 1] = entry end
+  end
+  return out
 end
 
 -- cd into the project, refresh the chips, then open it the way the panel says
@@ -174,10 +192,15 @@ M.presets.projects = function()
       end
       local max = p.max or 50
       local items, sel = {}, 1
-      for _, path in ipairs(list) do
+      for _, entry in ipairs(list) do
         if #items >= max then break end
-        if type(path) == "string" and fn.isdirectory(path) == 1 then
-          local name = fn.fnamemodify(path, ":t")
+        local path = fn.expand(entry.path)
+        if fn.isdirectory(path) == 1 then
+          -- prefer the project's name, fall back to the folder name
+          local name = entry.name
+          if type(name) ~= "string" or name == "" then
+            name = fn.fnamemodify(path, ":t")
+          end
           if name == "" then name = path end
           local dir = fn.fnamemodify(path, ":~:h")
           if util.same_dir(path, fn.getcwd()) then sel = #items + 1 end
@@ -192,7 +215,7 @@ M.presets.projects = function()
         end
       end
       if #items == 0 and (p.source == nil or p.source == "project.nvim") and fn.exists(":Project") == 2 then
-        return { { icon = "projects", label = "No projects yet - add one", run = "Project add" } }
+        return { { icon = "projects", label = "No projects found - run ':Project add' to add one", run = "Project add" } }
       end
       return items, sel
     end,
