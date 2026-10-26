@@ -3,6 +3,9 @@
 A fully customizable multi-panel dashboard for Neovim. Because other dashboard
 plugins are not fully customizable enough.
 
+[![Dash](https://i.imgur.com/dEnfX4h.png)](https://i.imgur.com/dEnfX4h.png)
+[![Dash](https://i.imgur.com/zmcYZnK.png)](https://i.imgur.com/zmcYZnK.png)
+
 ## Features
 
 - Configurable number of panels, in a responsive grid
